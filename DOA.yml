@@ -61,11 +61,37 @@
               Value: "CloudFormation"
             - Key: "deployed-by"
               Value: !Ref DeployedBy
+      
       S3Bucket:
         Type: 'AWS::S3::Bucket'
         DeletionPolicy: Retain
         Properties:
           BucketName: doa-1234
+          WebsiteConfiguration:
+            IndexDocument: index.html
+            ErrorDocument: error.html
+          PublicAccessBlockConfiguration:
+            BlockPublicAcls: false
+            BlockPublicPolicy: false
+            IgnorePublicAcls: false
+      
+      WebsiteHostingBucketPolicy:
+        Type: 'AWS::S3::BucketPolicy'
+        Properties:
+          Bucket: !Ref S3Bucket
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: PublicReadForGetBucketObjects
+                Effect: Allow
+                Principal: '*'
+                Action: 's3:GetObject'
+                Resource: !Join 
+                  - ''
+                  - - 'arn:aws:s3:::'
+                    - !Ref S3Bucket
+                    - /*
+
 
     Outputs:
       VPC:
@@ -80,3 +106,8 @@
             - !Ref Subnet2
         Export:
           Name: "SubnetIDs-VPC"
+      WebsiteURL:
+        Description: URL for website hosted on S3
+        Value: !GetAtt
+          - S3Bucket
+          - WebsiteURL

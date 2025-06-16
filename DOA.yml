@@ -14,7 +14,7 @@
             - Key: "managed-by"
               Value: "CloudFormation"
             - Key: "deployed-by"
-              Value: "<Enter Name Here>"  
+              Value: "Jackson M"  
 
       Subnet1:
         Type: AWS::EC2::Subnet
@@ -27,4 +27,17 @@
             - Key: "managed-by"
               Value: "CloudFormation"
             - Key: "deployed-by"
-              Value: "<Enter Name Here>"
+              Value: "Jackson M"
+
+      Subnet2:
+        Type: AWS::EC2::Subnet
+        Properties:
+          VpcId: !Ref VPC
+          AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+          CidrBlock: "10.10.11.0/24"
+          MapPublicIpOnLaunch: true
+          Tags:
+            - Key: "managed-by"
+              Value: "CloudFormation"
+            - Key: "deployed-by"
+              Value: "Jackson M" 

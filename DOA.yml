@@ -1,6 +1,24 @@
     AWSTemplateFormatVersion: 2010-09-09
     Description: Answer Digital DevOps Academy
 
+    Parameters:
+      VpcCIDRSubnet1:
+        Description: Please enter the IP range (CIDR notation) for this VPC
+        Type: String
+        MinLength: 9
+        MaxLength: 18
+        Default: 10.10.10.0/24
+      VpcCIDRSubnet2:
+        Description: Please enter the IP range (CIDR notation) for this VPC
+        Type: String
+        MinLength: 9
+        MaxLength: 18
+        Default: 10.10.11.0/24
+      DeployedBy:
+        Description: Please enter the name of who is deploying this resource.
+        Type: String
+        Default: Jackson M
+
     Resources:
       VPC:
         Type: AWS::EC2::VPC
@@ -14,30 +32,35 @@
             - Key: "managed-by"
               Value: "CloudFormation"
             - Key: "deployed-by"
-              Value: "Jackson M"  
+              Value: !Ref DeployedBy  
 
       Subnet1:
         Type: AWS::EC2::Subnet
         Properties:
           VpcId: !Ref VPC
           AvailabilityZone: !Select [ 0, !GetAZs  '' ]
-          CidrBlock: "10.10.10.0/24"
+          CidrBlock: !Ref VpcCIDRSubnet1
           MapPublicIpOnLaunch: true
           Tags:
             - Key: "managed-by"
               Value: "CloudFormation"
             - Key: "deployed-by"
-              Value: "Jackson M"
+              Value: !Ref DeployedBy
 
       Subnet2:
         Type: AWS::EC2::Subnet
         Properties:
           VpcId: !Ref VPC
           AvailabilityZone: !Select [ 0, !GetAZs  '' ]
-          CidrBlock: "10.10.11.0/24"
+          CidrBlock: !Ref VpcCIDRSubnet2
           MapPublicIpOnLaunch: true
           Tags:
             - Key: "managed-by"
               Value: "CloudFormation"
             - Key: "deployed-by"
-              Value: "Jackson M" 
+              Value: !Ref DeployedBy
+
+    Outputs:
+      VPC:
+        Description: A reference to the created VPC
+        Value: !Ref VPC

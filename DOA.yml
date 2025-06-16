@@ -5,16 +5,16 @@
       VpcCIDRSubnet1:
         Description: Please enter the IP range (CIDR notation) for this VPC
         Type: String
-        MinLength: "9"
-        MaxLength: "18"
-        AllowedPattern: "^[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}\/[0-9]{1,2}"
+        MinLength: 9
+        MaxLength: 18
+        AllowedPattern: ^[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}\/[0-9]{1,2}$
         Default: 10.10.10.0/24
       VpcCIDRSubnet2:
         Description: Please enter the IP range (CIDR notation) for this VPC
         Type: String
-        MinLength: "9"
-        MaxLength: "18"
-        AllowedPattern: "^[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}\/[0-9]{1,2}"
+        MinLength: 9
+        MaxLength: 18
+        AllowedPattern: ^[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}\/[0-9]{1,2}$
         Default: 10.10.11.0/24
       DeployedBy:
         Description: Please enter the name of who is deploying this resource.

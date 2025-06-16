@@ -61,8 +61,22 @@
               Value: "CloudFormation"
             - Key: "deployed-by"
               Value: !Ref DeployedBy
+      S3Bucket:
+        Type: 'AWS::S3::Bucket'
+        DeletionPolicy: Retain
+        Properties:
+          BucketName: doa-1234
 
     Outputs:
       VPC:
         Description: A reference to the created VPC
         Value: !Ref VPC
+      SubnetIDs:
+        Description: IDs of all VPC Subnets
+        Value: !Join
+          - ','
+          - 
+            - !Ref Subnet1
+            - !Ref Subnet2
+        Export:
+          Name: "SubnetIDs-VPC"

@@ -1,0 +1,113 @@
+    AWSTemplateFormatVersion: 2010-09-09
+    Description: Answer Digital DevOps Academy
+
+    Parameters:
+      VpcCIDRSubnet1:
+        Description: Please enter the IP range (CIDR notation) for this VPC
+        Type: String
+        MinLength: 9
+        MaxLength: 18
+        AllowedPattern: (([1-9]{0,1}[0-9]{0,2}|2[0-4][0-9]|25[0-5])\.){3}([1-9]{0,1}[0-9]{0,2}|2[0-4][0-9]|25[0-5])\/([1-2][0-9]|3[0-1])
+        Default: 10.10.10.0/24
+      VpcCIDRSubnet2:
+        Description: Please enter the IP range (CIDR notation) for this VPC
+        Type: String
+        MinLength: 9
+        MaxLength: 18
+        AllowedPattern: (([1-9]{0,1}[0-9]{0,2}|2[0-4][0-9]|25[0-5])\.){3}([1-9]{0,1}[0-9]{0,2}|2[0-4][0-9]|25[0-5])\/([1-2][0-9]|3[0-1])
+        Default: 10.10.11.0/24
+      DeployedBy:
+        Description: Please enter the name of who is deploying this resource.
+        Type: String
+        Default: Jackson M
+
+    Resources:
+      VPC:
+        Type: AWS::EC2::VPC
+        Properties:
+          CidrBlock: "10.10.10.0/20"
+          EnableDnsHostnames: false
+          EnableDnsSupport: true
+          Tags:
+            - Key: "Name"
+              Value: "VPC" 
+            - Key: "managed-by"
+              Value: "CloudFormation"
+            - Key: "deployed-by"
+              Value: !Ref DeployedBy  
+
+      Subnet1:
+        Type: AWS::EC2::Subnet
+        Properties:
+          VpcId: !Ref VPC
+          AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+          CidrBlock: !Ref VpcCIDRSubnet1
+          MapPublicIpOnLaunch: true
+          Tags:
+            - Key: "managed-by"
+              Value: "CloudFormation"
+            - Key: "deployed-by"
+              Value: !Ref DeployedBy
+
+      Subnet2:
+        Type: AWS::EC2::Subnet
+        Properties:
+          VpcId: !Ref VPC
+          AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+          CidrBlock: !Ref VpcCIDRSubnet2
+          MapPublicIpOnLaunch: true
+          Tags:
+            - Key: "managed-by"
+              Value: "CloudFormation"
+            - Key: "deployed-by"
+              Value: !Ref DeployedBy
+      
+      S3Bucket:
+        Type: 'AWS::S3::Bucket'
+        DeletionPolicy: Retain
+        Properties:
+          BucketName: doa-1234
+          WebsiteConfiguration:
+            IndexDocument: index.html
+            ErrorDocument: error.html
+          PublicAccessBlockConfiguration:
+            BlockPublicAcls: false
+            BlockPublicPolicy: false
+            IgnorePublicAcls: false
+      
+      WebsiteHostingBucketPolicy:
+        Type: 'AWS::S3::BucketPolicy'
+        Properties:
+          Bucket: !Ref S3Bucket
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: PublicReadForGetBucketObjects
+                Effect: Allow
+                Principal: '*'
+                Action: 's3:GetObject'
+                Resource: !Join 
+                  - ''
+                  - - 'arn:aws:s3:::'
+                    - !Ref S3Bucket
+                    - /*
+
+
+    Outputs:
+      VPC:
+        Description: A reference to the created VPC
+        Value: !Ref VPC
+      SubnetIDs:
+        Description: IDs of all VPC Subnets
+        Value: !Join
+          - ','
+          - 
+            - !Ref Subnet1
+            - !Ref Subnet2
+        Export:
+          Name: "SubnetIDs-VPC"
+      WebsiteURL:
+        Description: URL for website hosted on S3
+        Value: !GetAtt
+          - S3Bucket
+          - WebsiteURL
